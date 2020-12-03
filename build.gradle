@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+//repositories {
+//    mavenCentral()
+//}
+repositories {
+    mavenLocal() //1.优先查找本地maven库，性能最好
+    maven{//2.其次查找aliyun maven库
+        url'http://maven.aliyun.com/nexus/content/groups/public/'
+    }
+    mavenCentral()//3.最后查找maven中央库
+}
+
+// 设定主启动类
+jar {
+    manifestContentCharset 'utf-8'
+    metadataCharset 'utf-8'
+    manifest {
+        attributes 'Main-Class': 'Client'
+    }
+
+    // 将jar包打到lib目录
+//    into('lib') {
+//        from configurations.runtime
+//    }
+//     会将依赖包解压后以文件夹的形式打到包里面, 可以以jar包的形式直接运行
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+// 依赖的jar包，类似于maven的依赖管理
+dependencies {
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+}
